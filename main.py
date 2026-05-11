@@ -23,7 +23,7 @@ def askInput(generation):
     print("Type FORWARD to continue to next generation")
     print("Type STATS for statistics")
     print("Type GOOBERS for goobers")
-    print("If something says \"...\", press ENTER")
+    print("If something says \"...\" press ENTER")
     print("\nInput: ", end="")
 
 
@@ -34,6 +34,16 @@ while running:
     if prompt == "forward" or prompt == "f":
         generation += 1
         print(f"Next Generation: {generation}")
+        prevGoobers = len(goobList)
+        for goob in goobList:
+            goobList, names, deaths = goob.cycle(goobList, names, deaths)
+        differenceInGoobers = prevGoobers-len(goobList)
+        if differenceInGoobers == 0:
+            print("[bold]Era of stillness")
+        elif differenceInGoobers == prevGoobers*-1:
+            print("[red][bold]CATACLYSM")
+        elif differenceInGoobers < prevGoobers/10 or differenceInGoobers > prevGoobers/10*-1:
+            print("[bold]Era of little change")
         input("...")
     elif prompt == "stats" or prompt == "s":
         print("--Goobers--")
