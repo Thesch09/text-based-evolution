@@ -13,7 +13,9 @@ names = ["John", "Sprunkle", "Spey", "Spob", "Goobwilliams", "Jane", "Jeff", "Ca
 goobList = []
 for i in range(10): # The original Gooberwalkers
     goobList.append(goober(names[random.randint(0,len(names)-1)], # name of new goober
-                    None, None, # name of parents
+                    len(goobList),
+                    None, i*-1,
+                    None, i*-1, # name and id of parent 2
                     random.randint(70,100), # The size of the stomach of the new goob
                     random.randint(20,50))) # The ability to forage of the child
 

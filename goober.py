@@ -2,11 +2,14 @@ import random
 import math
 from rich import print
 class goober:
-    def __init__(self, name, parent1, parent2, maxHunger, forage):
+    def __init__(self, name, newId, parent1, parent1Id, parent2, parent2Id, maxHunger, forage):
         self.name = name
+        self.id = newId
         self.age = 0
         self.parent1 = parent1
+        self.parent1Id = parent1Id
         self.parent2 = parent2
+        self.parent2Id = parent2Id
         self.maxHunger = maxHunger
         self.hunger = self.maxHunger/2
         self.forage = forage
@@ -18,9 +21,11 @@ class goober:
         totalHunger = self.maxHunger + mate.maxHunger
         totalForage = self.forage + mate.forage
         goobList.append(goober(child, # name of new goober (will take from long list)
-                       self.name, mate.name, # name of parents
-                       totalHunger/2, # The size of the stomach of the child
-                       totalForage/2)) # The ability to forage of the child
+                        len(goobList),
+                        self.name, self.id, # name and id of parent 1
+                        mate.id, mate.name, # name and id of parent 2
+                        totalHunger/2, # The size of the stomach of the child
+                        totalForage/2)) # The ability to forage of the child
         return goobList
     
     def forageFood(self):
@@ -49,7 +54,7 @@ class goober:
             for i in range(3):
                 otherGoober = goobList[random.randint(0,len(goobList)-1)]
                 if otherGoober.age > 2 and otherGoober.hunger >= math.ceil(otherGoober.maxHunger/2):
-                    if not otherGoober.name == self.parent1 or otherGoober.name == self.parent2 :
+                    if otherGoober.id != self.parent1Id and otherGoober.id != self.parent2Id and otherGoober.id != self.id:
                         goobList = self.procreate(otherGoober, names,goobList)
                         self.lastAct = "procrate"
                         break
