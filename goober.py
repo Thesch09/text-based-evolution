@@ -18,7 +18,6 @@ class goober:
         
     def procreate(self, mate, names, goobList, totalGoobers):
         child = names[random.randint(0,len(names)-1)]
-        print("")
         print(f"{self.name} and {mate.name} have given birth to {child}")
 
         self.children.update({child:totalGoobers})
@@ -36,7 +35,6 @@ class goober:
         return goobList
     
     def forageFood(self):
-        print()
         if self.hunger <= math.ceil(self.maxHunger/3):
             chanceFail = random.randint(1,50+math.ceil(self.hunger/self.maxHunger*10))
             if chanceFail < self.forage:
@@ -46,7 +44,6 @@ class goober:
 
     def die(self, cause):
         if cause == "hunger":
-            print("")
             if self.lastAct == None:
                 print(f"{self.name} died of hunger")
             elif self.lastAct == "eat":
@@ -62,11 +59,13 @@ class goober:
                 return "Yummy food!"
             if self.hunger < self.maxHunger/2:
                 return "I'm getting kinda hungy"
+            if self.hunger < self.maxHunger/4 and self.lastAct == "procreate":
+                return "Times are dire. Why do I want to consume my own child?"
             return ""
         else:
             return ""
 
-    def cycle(self, goobList, names, deaths, totalGoobers):
+    def cycle(self, goobList, names, deaths, totalGoobers, deathNote):
 
         self.lastAct = None
         self.age += 1
@@ -83,13 +82,11 @@ class goober:
         
         thought = self.thinker()
         if thought != "":
-            print("")
+            print()
             print(f"{self.name} thought: {thought}")
 
         self.hunger -= 5+self.forage/2
         if self.hunger <= 0:
-            self.die("hunger")
-            goobList.remove(self)
-            deaths += 1
-        return goobList, names, deaths, totalGoobers
+            deathNote.update({self:"hunger"})
+        return goobList, names, deaths, totalGoobers, deathNote
         

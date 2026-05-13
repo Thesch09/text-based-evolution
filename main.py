@@ -9,7 +9,7 @@ deaths = 0
 totalGoobers = 0
 avgForage = 0
 
-names = ["John", "Sprunkle", "Spey", "Spob", "Goobwilliams", "Jane", "Jeff", "Carl", "Karl", "Qarl", "Jeremiah", "Goobelle", "Goobworth", "Kasper", "Elias", "Leon", "Filip", "Jan", "Theodor"]
+names = ["John", "Sprunkle", "Spey", "Spob", "Goobwilliams", "Jane", "Jeff", "Carl", "Karl", "Qarl", "Jeremiah", "Goobelle", "Goobsworth", "Kasper", "Elias", "Leon", "Filip", "Jan", "Theodor", "Goobthaniel", "Gerry Man Dering", "Berry", deaths, "Todd"]
 goobList = []
 for i in range(10): # The original Gooberwalkers
     goobList.append(goober(names[random.randint(0,len(names)-1)], # name of new goober
@@ -47,13 +47,22 @@ def newGeneration():
 
     prevGoobers = len(goobList)
     avgForage = 0
+    deathNote = {}
     for goob in goobList:
-        goobList, names, deaths, totalGoobers = goob.cycle(goobList, names, deaths, totalGoobers)
+        goobList, names, deaths, totalGoobers, deathNote = goob.cycle(goobList, names, deaths, totalGoobers, deathNote)
         avgForage += goob.forage
     try:
         avgForage = avgForage/len(goobList)
     except ZeroDivisionError:
         avgForage = 0
+    
+    # The goobers that died
+    if len(deathNote) != 0:
+        print("The dead")
+        for entry in deathNote:
+            entry.die(deathNote[entry])
+            goobList.remove(entry)
+    
     differenceInGoobers = prevGoobers-len(goobList)
     if differenceInGoobers == 0:
         print("[bold]Era of stillness")
@@ -153,6 +162,8 @@ while running:
         try:
             years = abs(int(years))
         except TypeError:
+            years = 1
+        except ValueError:
             years = 1
         print(f"Going forwards {years} generations")
         for i in range(years):
