@@ -8,6 +8,9 @@ generation = 0
 deaths = 0
 totalGoobers = 0
 avgForage = 0
+avgMaxHunger = 0
+avgCharm = 0
+avgFertility = 0
 
 names = ["John", "Sprunkle", "Spey", "Spob", "Goobwilliams", "Jane", "Jeff", "Carl", "Karl", "Qarl", "Jeremiah", "Goobelle", "Goobsworth", "Kasper", "Elias", "Leon", "Filip", "Jan", "Theodor", "Goobthaniel", "Gerry Man Dering", "Berry", deaths, "Todd"]
 goobList = []
@@ -17,10 +20,20 @@ for i in range(10): # The original Gooberwalkers
                     None, i*-1,
                     None, i*-1, # name and id of parent 2
                     random.randint(70,100), # The size of the stomach of the new goob
-                    random.randint(20,50))) # The ability to forage of the child
+                    random.randint(20,50), # The ability to forage of the child
+                    random.randint(2,4),
+                    random.randint(30,50)/100
+                    )) 
+    
     totalGoobers += 1
     avgForage += goobList[-1].forage
+    avgMaxHunger += goobList[-1].maxHunger
+    avgCharm += goobList[-1].charm
+    avgFertility += goobList[-1].fertility
 avgForage = avgForage/len(goobList)
+avgMaxHunger = avgMaxHunger/len(goobList)
+avgCharm = avgCharm/len(goobList)
+avgFertility = avgFertility/len(goobList)
 
 def askInput(generation):
     print(f"Current Generation: {generation}\n")
@@ -47,14 +60,32 @@ def newGeneration():
 
     prevGoobers = len(goobList)
     avgForage = 0
+    avgMaxHunger = 0
+    avgCharm = 0
+    avgFertility = 0
     deathNote = {}
     for goob in goobList:
         goobList, names, deaths, totalGoobers, deathNote = goob.cycle(goobList, names, deaths, totalGoobers, deathNote)
         avgForage += goob.forage
+        avgMaxHunger += goob.maxHunger
+        avgCharm += goob.charm
+        avgFertility += goob.fertility
     try:
         avgForage = avgForage/len(goobList)
     except ZeroDivisionError:
         avgForage = 0
+    try:
+        avgMaxHunger = avgMaxHunger/len(goobList)
+    except ZeroDivisionError:
+        avgMaxHunger = 0
+    try:
+        avgCharm = avgCharm/len(goobList)
+    except ZeroDivisionError:
+        avgCharm = 0
+    try:
+        avgFertility = avgFertility/len(goobList)
+    except ZeroDivisionError:
+        avgFertility = 0
     
     # The goobers that died
     if len(deathNote) != 0:
@@ -62,6 +93,7 @@ def newGeneration():
         for entry in deathNote:
             entry.die(deathNote[entry])
             goobList.remove(entry)
+            deaths += 1
     
     differenceInGoobers = prevGoobers-len(goobList)
     if differenceInGoobers == 0:
@@ -110,6 +142,8 @@ def inspectGoober(goob):
     input("...")
     print(f"Hunger/Max Hunger: {goob.hunger}/{goob.maxHunger}")
     print(f"Forage skill: {goob.forage}")
+    print(f"Charm: {goob.charm}")
+    print(f"Fertility: {goob.fertility}")
     input("...")
 
 def inspect(searchedGoobers):
@@ -176,6 +210,9 @@ while running:
         input("...")
         print("--Stats--")
         print(f"Average Forage Skill: {avgForage}")
+        print(f"Average Max Hunger: {avgMaxHunger}")
+        print(f"Average Charm: {avgCharm}")
+        print(f"Average Fertility: {avgFertility}")
         input("...")
     elif prompt == "goobers" or prompt == "g":
         if len(goobList) > 100:
