@@ -79,6 +79,28 @@ def nameQuery():
         names.append(input("Add: "))
     input("...")
 
+def inspectGoober(goob):
+    print(f"Name: {goob.name}")
+    print(f"Age: {goob.age}")
+    print(f"ID: {goob.id}")
+    input("...")
+    print(f"Parent 1: {goob.parent1}, ID {goob.parent1Id}")
+    print(f"Parent 2: {goob.parent2}, ID {goob.parent2Id}")
+    if len(goob.children) == 0:
+        print("This Goober has no kids")
+    else:
+        i = 1
+        input("...")
+        for child in goob.children:
+            print(f"Child {i}: {child}, ID {goob.children[child]}")
+            i += 1
+    input("...")
+    print(f"Hunger/Max Hunger: {goob.hunger}/{goob.maxHunger}")
+    print(f"Forage skill: {goob.forage}")
+    input("...")
+
+
+
 while running:
     askInput(generation)
     prompt = input("").lower().strip()
@@ -135,18 +157,4 @@ while running:
                     print("No Goober found with that ID")
                     input("...")
                 else:
-                    print(f"Name: {selectedGoob.name}")
-                    print(f"Age: {selectedGoob.age}")
-                    print(f"ID: {selectedGoob.id}")
-                    input("...")
-                    print(f"Parent 1: {selectedGoob.parent1}, ID {selectedGoob.parent1Id}")
-                    print(f"Parent 2: {selectedGoob.parent2}, ID {selectedGoob.parent2Id}")
-                    if len(goob.children) == 0:
-                        print("This Goober has no kids")
-                    else:
-                        i = 1
-                        for child in goob.children:
-                            print(f"Child {i}: {child}, {child.}")
-                            i += 1
-                    
-                    input("...")
+                    inspectGoober(selectedGoob)
