@@ -9,7 +9,7 @@ deaths = 0
 totalGoobers = 0
 avgForage = 0
 
-names = ["John", "Sprunkle", "Spey", "Spob", "Goobwilliams", "Jane", "Jeff", "Carl", "Karl", "Qarl", "Jeremiah"]
+names = ["John", "Sprunkle", "Spey", "Spob", "Goobwilliams", "Jane", "Jeff", "Carl", "Karl", "Qarl", "Jeremiah", "Goobelle", "Goobworth", "Kasper", "Elias", "Leon", "Filip", "Jan", "Theodor"]
 goobList = []
 for i in range(10): # The original Gooberwalkers
     goobList.append(goober(names[random.randint(0,len(names)-1)], # name of new goober
@@ -19,7 +19,8 @@ for i in range(10): # The original Gooberwalkers
                     random.randint(70,100), # The size of the stomach of the new goob
                     random.randint(20,50))) # The ability to forage of the child
     totalGoobers += 1
-
+    avgForage += goobList[-1].forage
+avgForage = avgForage/len(goobList)
 
 def askInput(generation):
     print(f"Current Generation: {generation}\n")
@@ -38,9 +39,12 @@ def newGeneration():
     global deaths
     global totalGoobers
     global names
+
     generation += 1
     print(f"Next Generation: {generation}")
     print(f"Goobers at start of Generation: {len(goobList)}")
+    print("")
+
     prevGoobers = len(goobList)
     avgForage = 0
     for goob in goobList:
@@ -99,14 +103,60 @@ def inspectGoober(goob):
     print(f"Forage skill: {goob.forage}")
     input("...")
 
+def inspect(searchedGoobers):
+    for goob in searchedGoobers:
+        print(f"{goob.name}, ID {goob.id}")
+    print("Which goob will you inspect? Press ENTER to return")
+    prompt = input("ID: ")
+    if prompt == "":
+        return "break"
+    try:
+        prompt = int(prompt)
+    except TypeError:
+        print(f"{prompt} is not a whole number")
+        return
+    selectedGoob = None
+    for goob in searchedGoobers:
+        if goob.id == prompt:
+            selectedGoob = goob
+            break
+    if selectedGoob == None:
+        print("No Goober found with that ID")
+        input("...")
+    else:
+        inspectGoober(selectedGoob)
 
+def optionInspect(goobers):
+    print("Select a Goober. Press ENTER to return")
+    prompt = input()
+    if prompt != "":
+        searchedGoobers = []
+        for goob in goobers:
+            if goob.name == prompt:
+                searchedGoobers.append(goob)
+        if len(searchedGoobers) == 0:
+            print(f"No living Goobers found named {prompt}...")
+            input("...")
+        else:
+            print(f"{len(searchedGoobers)} Goobers named {prompt}")
+            while True:
+                if inspect(searchedGoobers) == "break":
+                    break
 
 while running:
     askInput(generation)
     prompt = input("").lower().strip()
 
     if prompt == "forward" or prompt == "f":
-        newGeneration()
+        years = input("How many generations?")
+        
+        try:
+            years = abs(int(years))
+        except TypeError:
+            years = 1
+        print(f"Going forwards {years} generations")
+        for i in range(years):
+            newGeneration()
     elif prompt == "stats" or prompt == "s":
         print("--Goobers--")
         print(f"Goobers: {len(goobList)}")
@@ -128,33 +178,4 @@ while running:
     elif prompt == "names" or prompt == "n":
         nameQuery()
     elif prompt == "inspect" or prompt == "i":
-        print("Select a Goober. Press ENTER to return")
-        prompt = input()
-        if prompt != "":
-            searchedGoobers = []
-            for goob in goobList:
-                if goob.name == prompt:
-                    searchedGoobers.append(goob)
-            if len(searchedGoobers) == 0:
-                print("No living Goobers found with this name...")
-                input("...")
-            else:
-                print(f"{len(searchedGoobers)} Goobers named {prompt}")
-                for goob in searchedGoobers:
-                    print(f"{goob.name}, ID {goob.id}")
-                print("Which goob will you inspect?")
-                try:
-                    prompt = int(input("ID: "))
-                except TypeError:
-                    print(f"{prompt} is not a whole number")
-                    break
-                selectedGoob = None
-                for goob in searchedGoobers:
-                    if goob.id == prompt:
-                        selectedGoob = goob
-                        break
-                if selectedGoob == None:
-                    print("No Goober found with that ID")
-                    input("...")
-                else:
-                    inspectGoober(selectedGoob)
+        optionInspect(goobList)

@@ -18,6 +18,7 @@ class goober:
         
     def procreate(self, mate, names, goobList, totalGoobers):
         child = names[random.randint(0,len(names)-1)]
+        print("")
         print(f"{self.name} and {mate.name} have given birth to {child}")
 
         self.children.update({child:totalGoobers})
@@ -29,26 +30,41 @@ class goober:
         goobList.append(goober(child, # name of new goober (will take from long list)
                         totalGoobers,
                         self.name, self.id, # name and id of parent 1
-                        mate.id, mate.name, # name and id of parent 2
+                        mate.name, mate.id, # name and id of parent 2
                         totalHunger/2, # The size of the stomach of the child
                         totalForage/2)) # The ability to forage of the child
         return goobList
     
     def forageFood(self):
+        print()
         if self.hunger <= math.ceil(self.maxHunger/3):
             chanceFail = random.randint(1,50+math.ceil(self.hunger/self.maxHunger*10))
             if chanceFail < self.forage:
                 self.hunger += 10 + self.forage
                 self.lastAct = "eat"
+                print(f"{self.name} ate some food")
 
     def die(self, cause):
         if cause == "hunger":
+            print("")
             if self.lastAct == None:
                 print(f"{self.name} died of hunger")
             elif self.lastAct == "eat":
                 print(f"{self.name} died of hunger, even though they just ate")
             elif self.lastAct == "procreate":
                 print(f"{self.name} died of hunger, next to their newborn")
+
+    def thinker(self):
+        if random.randint(1,10) == 1:
+            if self.lastAct == "procreate":
+                return "I love my child"
+            if self.lastAct == "eat":
+                return "Yummy food!"
+            if self.hunger < self.maxHunger/2:
+                return "I'm getting kinda hungy"
+            return ""
+        else:
+            return ""
 
     def cycle(self, goobList, names, deaths, totalGoobers):
 
@@ -65,6 +81,11 @@ class goober:
                         self.lastAct = "procrate"
                         break
         
+        thought = self.thinker()
+        if thought != "":
+            print("")
+            print(f"{self.name} thought: {thought}")
+
         self.hunger -= 5+self.forage/2
         if self.hunger <= 0:
             self.die("hunger")
