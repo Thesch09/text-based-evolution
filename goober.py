@@ -1,8 +1,9 @@
 import random
 import math
 from rich import print
+from console import saved
 class goober:
-    def __init__(self, name, newId, parent1, parent1Id, parent2, parent2Id, maxHunger, forage, charm, fertility):
+    def __init__(self, name, newId, parent1, parent1Id, parent2, parent2Id, maxHunger, forage, charm, fertility, colour):
         self.name = name
         self.id = newId
         self.age = 0
@@ -15,18 +16,30 @@ class goober:
         self.forage = forage # The chance of a successful forage
         self.charm = charm # The rolls a goober has to successfully procreate
         self.fertility = fertility # How many kids a goober can get, only from 1 parent
+        self.colour = colour
         self.lastAct = None
         self.children = {}
         
-    def procreate(self, mate, names, goobList, totalGoobers):
+    def procreate(self, mate, names, goobList, totalGoobers, generation):
         parentsFertility = self.fertility + mate.fertility
         if parentsFertility < 1:
             parentsFertility = 1
         else:
             parentsFertility = round(parentsFertility)
         for kids in range(parentsFertility):
+            # Name and colour of the child
             child = names[random.randint(0,len(names)-1)]
-            print(f"{self.name} and {mate.name} have given birth to {child}")
+            totalColour = [self.colour[0] + mate.colour[0] + random.randint(-10,10),
+                            self.colour[1] + mate.colour[1] + random.randint(-10,10),
+                            self.colour[2] + mate.colour[2] + random.randint(-10,10)]
+            for colour in range(len(totalColour)):
+                if totalColour[colour] < 0:
+                    totalColour[colour] = 0
+                if totalColour[colour] > 255:
+                    totalColour[colour] = 255
+            
+            saved.print(f"[rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})]{self.name}[/rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})] and [rgb({mate.colour[0]},{mate.colour[1]},{mate.colour[2]})]{mate.name}[/rgb({mate.colour[0]},{mate.colour[1]},{mate.colour[2]})] have given birth to [rgb({totalColour[0]},{totalColour[1]},{totalColour[2]})]{child}[/rgb({totalColour[0]},{totalColour[1]},{totalColour[2]})]")
+            # There must be a better way to do that, but it's the colour of the parent, name, remove the colour, colour of the other parent, name, remove the colour, colour of the child, name and remove the colour
 
             self.children.update({child:totalGoobers})
             mate.children.update({child:totalGoobers})
@@ -39,13 +52,14 @@ class goober:
 
             totalGoobers += 1
             goobList.append(goober(child, # name of new goober (will take from long list)
-                            totalGoobers,
+                            totalGoobers + generation, # ID of the child
                             self.name, self.id, # name and id of parent 1
                             mate.name, mate.id, # name and id of parent 2
                             totalHunger/2, # The size of the stomach of the child
                             totalForage/2, # The ability to forage of the child
                             math.floor(totalCharm/2),
-                            totalFertility/2
+                            totalFertility/2,
+                            totalColour
                             ))
         return goobList
     
@@ -55,18 +69,18 @@ class goober:
             if chanceFail < self.forage:
                 self.hunger += 10 + self.forage
                 self.lastAct = "eat"
-                print(f"{self.name} ate some food")
+                saved.print(f"[rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})]{self.name}[/rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})] ate some food")
 
     def die(self, cause):
         if cause == "hunger":
             if self.lastAct == None:
-                print(f"{self.name} died of hunger")
+                saved.print(f"[rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})]{self.name}[/rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})] died of hunger")
             elif self.lastAct == "eat":
-                print(f"{self.name} died of hunger, even though they just ate")
+                saved.print(f"[rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})]{self.name}[/rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})] died of hunger, even though they just ate")
             elif self.lastAct == "procreate":
-                print(f"{self.name} died of hunger, next to their newborn")
+                saved.print(f"[rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})]{self.name}[/rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})] died of hunger, next to their newborn")
             elif self.lastAct == "rejection":
-                print(f"{self.name} died of hunger, and sadness")
+                saved.print(f"[rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})]{self.name}[/rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})] died of hunger, and sadness")
 
     def thinker(self):
         if random.randint(1,10) == 1:
@@ -84,7 +98,7 @@ class goober:
         else:
             return ""
 
-    def cycle(self, goobList, names, deaths, totalGoobers, deathNote):
+    def cycle(self, goobList, names, deaths, totalGoobers, deathNote, generation):
 
         self.lastAct = None
         self.age += 1
@@ -95,15 +109,16 @@ class goober:
                 otherGoober = goobList[random.randint(0,len(goobList)-1)]
                 if otherGoober.age > 2 and otherGoober.hunger >= math.ceil(otherGoober.maxHunger/2):
                     if otherGoober.id != self.parent1Id and otherGoober.id != self.parent2Id and otherGoober.id != self.id:
-                        goobList = self.procreate(otherGoober, names,goobList, totalGoobers)
+                        goobList = self.procreate(otherGoober, names,goobList, totalGoobers, generation)
                         self.lastAct = "procrate"
                         break
             else:
-                self.lastAct = "rejection"
+                if random.randint(1,2) == 2:
+                    self.lastAct = "rejection"
         
         thought = self.thinker()
         if thought != "":
-            print(f"{self.name} thought: {thought}")
+            saved.print(f"[rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})]{self.name}[/rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})] thought: [rgb({self.colour[0]},{self.colour[1]},{self.colour[2]})]{thought}")
 
         self.hunger -= 5+self.fertility*10
         if self.hunger <= 0:

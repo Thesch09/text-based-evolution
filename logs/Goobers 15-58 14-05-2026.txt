@@ -1,0 +1,65 @@
+Next Generation: 1
+Goobers at start of Generation: 10
+Next Generation: 2
+Goobers at start of Generation: 10
+Next Generation: 3
+Goobers at start of Generation: 10
+Goobelle ate some food
+Gerry Man Dering ate some food
+Gerry Man Dering and Goobelle have given birth to Goobthaniel
+Todd ate some food
+Jeff ate some food
+Theodor ate some food
+Theodor and Jeff have given birth to Jeff
+Next Generation: 4
+Goobers at start of Generation: 12
+Goobelle and Gerry Man Dering have given birth to John
+Sprunkle ate some food
+Goobelle ate some food
+The dead
+Filip died of hunger
+Next Generation: 5
+Goobers at start of Generation: 12
+The dead
+Spey died of hunger
+Next Generation: 6
+Goobers at start of Generation: 11
+Goobsworth ate some food
+Sprunkle thought: I'm getting kinda hungy
+Goobthaniel ate some food
+John ate some food
+John and Goobthaniel have given birth to Goobwilliams
+Next Generation: 7
+Goobers at start of Generation: 12
+Gerry Man Dering ate some food
+Gerry Man Dering and Goobthaniel have given birth to Sprunkle
+Sprunkle ate some food
+Jeff ate some food
+Goobthaniel and Jeff have given birth to Goobwilliams
+Next Generation: 8
+Goobers at start of Generation: 14
+Gerry Man Dering and Goobthaniel have given birth to 0
+Goobelle ate some food
+Goobelle thought: No one wanted to hang with me...
+Theodor ate some food
+Goobwilliams ate some food
+Goobwilliams thought: I'm getting kinda hungy
+Next Generation: 9
+Goobers at start of Generation: 15
+Goobelle ate some food
+Goobelle and Gerry Man Dering have given birth to Berry
+Goobsworth ate some food
+Goobwilliams and Theodor have given birth to Qarl
+Goobwilliams ate some food
+Goobwilliams and Goobelle have given birth to Kasper
+Next Generation: 10
+Goobers at start of Generation: 18
+Goobelle and Goobwilliams have given birth to Goobwilliams
+Todd ate some food
+Todd and Goobwilliams have given birth to Jeff
+Sprunkle thought: I'm getting kinda hungy
+Jeff thought: I'm getting kinda hungy
+Sprunkle ate some food
+Sprunkle and Goobelle have given birth to Filip
+0 ate some food
+0 thought: Yummy food!

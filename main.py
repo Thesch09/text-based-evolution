@@ -1,7 +1,14 @@
 import random
 import math
 from rich import print
+
+import os
+import datetime
+from console import console, saved
 from goober import goober
+
+sessionStartTime = datetime.datetime.now()
+print(sessionStartTime)
 
 running = True
 generation = 0
@@ -11,6 +18,7 @@ avgForage = 0
 avgMaxHunger = 0
 avgCharm = 0
 avgFertility = 0
+avgColour = [0,0,0]
 
 names = ["John", "Sprunkle", "Spey", "Spob", "Goobwilliams", "Jane", "Jeff", "Carl", "Karl", "Qarl", "Jeremiah", "Goobelle", "Goobsworth", "Kasper", "Elias", "Leon", "Filip", "Jan", "Theodor", "Goobthaniel", "Gerry Man Dering", "Berry", deaths, "Todd"]
 goobList = []
@@ -22,7 +30,8 @@ for i in range(10): # The original Gooberwalkers
                     random.randint(70,100), # The size of the stomach of the new goob
                     random.randint(20,50), # The ability to forage of the child
                     random.randint(2,4),
-                    random.randint(30,50)/100
+                    random.randint(30,50)/100,
+                    [random.randint(200,255),random.randint(200,255),random.randint(200,255)]
                     )) 
     
     totalGoobers += 1
@@ -30,66 +39,87 @@ for i in range(10): # The original Gooberwalkers
     avgMaxHunger += goobList[-1].maxHunger
     avgCharm += goobList[-1].charm
     avgFertility += goobList[-1].fertility
-avgForage = avgForage/len(goobList)
-avgMaxHunger = avgMaxHunger/len(goobList)
-avgCharm = avgCharm/len(goobList)
-avgFertility = avgFertility/len(goobList)
+    for i in range(len(avgColour)):
+        avgColour[i] += goobList[-1].colour[i]
+avgForage /= len(goobList)
+avgMaxHunger /= len(goobList)
+avgCharm /= len(goobList)
+avgFertility /= len(goobList)
+for i in range(len(avgColour)):
+    avgColour[i] /= len(goobList)
 
 def askInput(generation):
-    print(f"Current Generation: {generation}\n")
+    console.print(f"Current Generation: {generation}\n")
     print("Type FORWARD to continue to next generation")
     print("Type STATS for statistics")
     print("Type GOOBERS for goobers")
     print("Type NAMES to add new names")
     print("Type INSPECT to inspect a goober")
-    print("If something says \"...\" press ENTER")
+    print("Type EXIT to exit")
+    console.print("If something says \"...\" press ENTER")
     print("\nInput: ", end="")
 
 def newGeneration():
     global generation
     global goobList
     global avgForage
+    global avgCharm
+    global avgFertility
+    global avgMaxHunger
+    global avgColour
     global deaths
     global totalGoobers
     global names
 
     generation += 1
-    print(f"Next Generation: {generation}")
-    print(f"Goobers at start of Generation: {len(goobList)}")
+    saved.print(f"Next Generation: {generation}")
+    saved.print(f"Goobers at start of Generation: {len(goobList)}")
     print("")
 
     prevGoobers = len(goobList)
+
+    # Averages
     avgForage = 0
     avgMaxHunger = 0
     avgCharm = 0
     avgFertility = 0
+    avgColour = [0,0,0]
+
     deathNote = {}
     for goob in goobList:
-        goobList, names, deaths, totalGoobers, deathNote = goob.cycle(goobList, names, deaths, totalGoobers, deathNote)
+        goobList, names, deaths, totalGoobers, deathNote = goob.cycle(goobList, names, deaths, totalGoobers, deathNote, generation)
+
+        #Averages
         avgForage += goob.forage
         avgMaxHunger += goob.maxHunger
         avgCharm += goob.charm
         avgFertility += goob.fertility
+        for i in range(len(avgColour)):
+            avgColour[i] += goob.colour[i]
+    
+    # Make the averages average
     try:
-        avgForage = avgForage/len(goobList)
+        worthlessNum = 1 / len(goobList) # If this fails then the length of goobList is 0
+
+        avgForage /= len(goobList)
+        avgMaxHunger /= len(goobList)
+        avgCharm /= len(goobList)
+        avgFertility /= len(goobList)
+        avgColour[0] /= len(goobList)
+        avgColour[1] /= len(goobList)
+        avgColour[2] /= len(goobList)
     except ZeroDivisionError:
         avgForage = 0
-    try:
-        avgMaxHunger = avgMaxHunger/len(goobList)
-    except ZeroDivisionError:
         avgMaxHunger = 0
-    try:
-        avgCharm = avgCharm/len(goobList)
-    except ZeroDivisionError:
         avgCharm = 0
-    try:
-        avgFertility = avgFertility/len(goobList)
-    except ZeroDivisionError:
         avgFertility = 0
+        avgColour[0] = 0
+        avgColour[1] = 0
+        avgColour[2] = 0
     
     # The goobers that died
     if len(deathNote) != 0:
-        print("The dead")
+        saved.print("The dead")
         for entry in deathNote:
             entry.die(deathNote[entry])
             goobList.remove(entry)
@@ -125,30 +155,31 @@ def nameQuery():
     input("...")
 
 def inspectGoober(goob):
-    print(f"Name: {goob.name}")
-    print(f"Age: {goob.age}")
-    print(f"ID: {goob.id}")
+    print(f"Name: [rgb({goob.colour[0]},{goob.colour[1]},{goob.colour[2]})]{goob.name}")
+    print(f"Colour: [rgb({goob.colour[0]},{goob.colour[1]},{goob.colour[2]})]{goob.colour[0]},{goob.colour[1]},{goob.colour[2]}")
+    console.print(f"Age: {goob.age}")
+    console.print(f"ID: {goob.id}")
     input("...")
-    print(f"Parent 1: {goob.parent1}, ID {goob.parent1Id}")
-    print(f"Parent 2: {goob.parent2}, ID {goob.parent2Id}")
+    console.print(f"Parent 1: {goob.parent1}, ID {goob.parent1Id}")
+    console.print(f"Parent 2: {goob.parent2}, ID {goob.parent2Id}")
     if len(goob.children) == 0:
         print("This Goober has no kids")
     else:
         i = 1
         input("...")
         for child in goob.children:
-            print(f"Child {i}: {child}, ID {goob.children[child]}")
+            console.print(f"Child {i}: {child}, ID {goob.children[child]}")
             i += 1
     input("...")
-    print(f"Hunger/Max Hunger: {goob.hunger}/{goob.maxHunger}")
-    print(f"Forage skill: {goob.forage}")
-    print(f"Charm: {goob.charm}")
-    print(f"Fertility: {goob.fertility}")
+    console.print(f"Hunger/Max Hunger: {goob.hunger}/{goob.maxHunger}")
+    console.print(f"Forage skill: {goob.forage}")
+    console.print(f"Charm: {goob.charm}")
+    console.print(f"Fertility: {goob.fertility}")
     input("...")
 
 def inspect(searchedGoobers):
     for goob in searchedGoobers:
-        print(f"{goob.name}, ID {goob.id}")
+        console.print(f"[rgb({goob.colour[0]},{goob.colour[1]},{goob.colour[2]})]{goob.name}[/rgb({goob.colour[0]},{goob.colour[1]},{goob.colour[2]})], ID {goob.id}")
     print("Which goob will you inspect? Press ENTER to return")
     prompt = input("ID: ")
     if prompt == "":
@@ -156,7 +187,7 @@ def inspect(searchedGoobers):
     try:
         prompt = int(prompt)
     except TypeError:
-        print(f"{prompt} is not a whole number")
+        console.print(f"{prompt} is not a whole number")
         return
     selectedGoob = None
     for goob in searchedGoobers:
@@ -181,7 +212,7 @@ def optionInspect(goobers):
             print(f"No living Goobers found named {prompt}...")
             input("...")
         else:
-            print(f"{len(searchedGoobers)} Goobers named {prompt}")
+            console.print(f"{len(searchedGoobers)} Goobers named {prompt}")
             while True:
                 if inspect(searchedGoobers) == "break":
                     break
@@ -191,7 +222,7 @@ while running:
     prompt = input("").lower().strip()
 
     if prompt == "forward" or prompt == "f":
-        years = input("How many generations?")
+        years = input("How many generations? ")
         
         try:
             years = abs(int(years))
@@ -199,20 +230,26 @@ while running:
             years = 1
         except ValueError:
             years = 1
-        print(f"Going forwards {years} generations")
+        console.print(f"Going forwards {years} generations")
         for i in range(years):
             newGeneration()
     elif prompt == "stats" or prompt == "s":
         print("--Goobers--")
-        print(f"Goobers: {len(goobList)}")
-        print(f"Total Goobers: {totalGoobers}")
-        print(f"Total Deaths: {deaths}")
+        console.print(f"Goobers: {len(goobList)}")
+        console.print(f"Total Goobers: {totalGoobers}")
+        console.print(f"Total Deaths: {deaths}")
+        input("...")
+        console.print("--Colours--")
+        console.print(f"Red: [rgb({round(avgColour[0])},0,0)]{avgColour[0]}")
+        console.print(f"Green: [rgb(0,{round(avgColour[1])},0)]{avgColour[1]}")
+        console.print(f"Blue: [rgb(0,0,{round(avgColour[2])})]{avgColour[2]}")
+        print(f"Average: [rgb({round(avgColour[0])},{round(avgColour[1])},{round(avgColour[2])})]{avgColour[0]}, {avgColour[1]}, {avgColour[2]}")
         input("...")
         print("--Stats--")
-        print(f"Average Forage Skill: {avgForage}")
-        print(f"Average Max Hunger: {avgMaxHunger}")
-        print(f"Average Charm: {avgCharm}")
-        print(f"Average Fertility: {avgFertility}")
+        console.print(f"Average Forage Skill: {avgForage}")
+        console.print(f"Average Max Hunger: {avgMaxHunger}")
+        console.print(f"Average Charm: {avgCharm}")
+        console.print(f"Average Fertility: {avgFertility}")
         input("...")
     elif prompt == "goobers" or prompt == "g":
         if len(goobList) > 100:
@@ -221,9 +258,14 @@ while running:
             lengthOfList = len(goobList)
         print(f"Top {lengthOfList} Goobers")
         for i in range(lengthOfList):
-            print(f"{goobList[i].name}, age {goobList[i].age}")
+            console.print(f"[rgb({goobList[i].colour[0]},{goobList[i].colour[1]},{goobList[i].colour[2]})]{goobList[i].name}[/rgb({goobList[i].colour[0]},{goobList[i].colour[1]},{goobList[i].colour[2]})], age {goobList[i].age}")
         input("...")
     elif prompt == "names" or prompt == "n":
         nameQuery()
     elif prompt == "inspect" or prompt == "i":
         optionInspect(goobList)
+    elif prompt == "exit":
+        print("Goodbye!")
+        with open(f"logs/Goobers {sessionStartTime.strftime("%H-%M %d-%m-%Y")}.txt", "x") as log:
+            log.write(saved.export_text())
+        running = False
